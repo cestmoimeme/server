@@ -15,6 +15,7 @@
 !/apps/files
 !/apps/federation
 !/apps/federatedfilesharing
+!/apps/sharebymail
 !/apps/encryption
 !/apps/files_external
 !/apps/files_sharing
