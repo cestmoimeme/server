@@ -24,7 +24,7 @@
 					'{{#if avatarEnabled}}' +
 					'<div class="avatar {{#if modSeed}}imageplaceholderseed{{/if}}" data-username="{{shareWith}}" {{#if modSeed}}data-seed="{{shareWith}} {{shareType}}"{{/if}}></div>' +
 					'{{/if}}' +
-					'<span class="has-tooltip username" title="{{shareWith}}">{{shareWithDisplayName}}</span>' +
+					'<span class="has-tooltip username" title="{{shareWithTitle}}">{{shareWithDisplayName}}</span>' +
 					'{{#if mailNotificationEnabled}}  {{#unless isRemoteShare}}' +
 					'<span class="shareOption">' +
 						'<input id="mail-{{cid}}-{{shareWith}}" type="checkbox" name="mailNotification" class="mailNotification checkbox" {{#if wasMailSent}}checked="checked"{{/if}} />' +
@@ -153,6 +153,16 @@
 				shareWithDisplayName = shareWithDisplayName + " (" + t('core', 'group') + ')';
 			} else if (shareType === OC.Share.SHARE_TYPE_REMOTE) {
 				shareWithDisplayName = shareWithDisplayName + " (" + t('core', 'remote') + ')';
+			} else if (shareType === OC.Share.SHARE_TYPE_EMAIL) {
+				shareWithDisplayName = shareWithDisplayName + " (" + t('core', 'email') + ')';
+			}
+
+			if (shareType === OC.Share.SHARE_TYPE_GROUP) {
+				shareWithTitle = shareWith + " (" + t('core', 'group') + ')';
+			} else if (shareType === OC.Share.SHARE_TYPE_REMOTE) {
+				shareWithTitle = shareWith + " (" + t('core', 'remote') + ')';
+			} else if (shareType === OC.Share.SHARE_TYPE_EMAIL) {
+				shareWithTitle = shareWith + " (" + t('core', 'email') + ')';
 			}
 
 			return _.extend(hasPermissionOverride, {
@@ -165,6 +175,7 @@
 				wasMailSent: this.model.notificationMailWasSent(shareIndex),
 				shareWith: shareWith,
 				shareWithDisplayName: shareWithDisplayName,
+				shareWithTitle: shareWithTitle,
 				shareType: shareType,
 				shareId: this.model.get('shares')[shareIndex].id,
 				modSeed: shareType !== OC.Share.SHARE_TYPE_USER,
