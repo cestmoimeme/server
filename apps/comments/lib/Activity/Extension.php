@@ -29,6 +29,7 @@ use OCP\Comments\NotFoundException;
 use OCP\IL10N;
 use OCP\IURLGenerator;
 use OCP\L10N\IFactory;
+use OCP\Util;
 
 /**
  * Class Extension
@@ -304,8 +305,25 @@ class Extension implements IExtension {
 		if (preg_match('/^\<parameter\>(\d*)\<\/parameter\>$/', $parameter, $matches)) {
 			try {
 				$comment = $this->commentsManager->get((int) $matches[1]);
+				$users = [];
+				foreach ($comment->getMentions() as $mention) {
+					if ($mention['type'] !== 'user') {
+						continue;
+					}
+
+					try {
+						$displayName = $this->commentsManager->resolveDisplayName($mention['type'], $mention['id']);
+					} catch (\OutOfBoundsException $e) {
+						// No displayname, upon client's discretion what to display.
+						$displayName = $mention['id'];
+					}
+
+					// FIXME evil internal API hackery, do NOT copy this
+					$users['@' . $mention['id']] = '<user display-name="' . Util::sanitizeHTML($displayName) . '">' . Util::sanitizeHTML($mention['id']) . '</user>';
+				}
 				$message = $comment->getMessage();
 				$message = str_replace("\n", '<br />', str_replace(['<', '>'], ['&lt;', '&gt;'], $message));
+				$message = str_replace(array_keys($users), array_values($users), $message);
 				return $message;
 			} catch (NotFoundException $e) {
 				return '';
