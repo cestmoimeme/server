@@ -25,30 +25,33 @@
 					'<div class="avatar {{#if modSeed}}imageplaceholderseed{{/if}}" data-username="{{shareWith}}" {{#if modSeed}}data-seed="{{shareWith}} {{shareType}}"{{/if}}></div>' +
 					'{{/if}}' +
 					'<span class="has-tooltip username" title="{{shareWithTitle}}">{{shareWithDisplayName}}</span>' +
-					'{{#if mailNotificationEnabled}}  {{#unless isRemoteShare}}' +
+					'{{#if mailNotificationEnabled}}  {{#unless isRemoteShare}} {{#unless isMailShare}}' +
 					'<span class="shareOption">' +
 						'<input id="mail-{{cid}}-{{shareWith}}" type="checkbox" name="mailNotification" class="mailNotification checkbox" {{#if wasMailSent}}checked="checked"{{/if}} />' +
 						'<label for="mail-{{cid}}-{{shareWith}}">{{notifyByMailLabel}}</label>' +
 					'</span>' +
-					'{{/unless}} {{/if}}' +
+					'{{/unless}} {{/unless}} {{/if}}' +
 					'<span class="sharingOptionsGroup">' +
 						'{{#if editPermissionPossible}}' +
+						'{{#unless isFileSharedByMail}}' +
 						'<span class="shareOption">' +
 							'<input id="canEdit-{{cid}}-{{shareWith}}" type="checkbox" name="edit" class="permissions checkbox" {{#if hasEditPermission}}checked="checked"{{/if}} />' +
 							'<label for="canEdit-{{cid}}-{{shareWith}}">{{canEditLabel}}</label>' +
 						'</span>' +
+						'{{/unless}}' +
 						'{{/if}}' +
+						'{{#unless isMailShare}}' +
 						'<a href="#"><span class="icon icon-more"></span></a>' +
 						'<div class="popovermenu bubble hidden menu">' +
 							'<ul>' +
-								'{{#if isResharingAllowed}} {{#if sharePermissionPossible}}' +
+								'{{#if isResharingAllowed}} {{#if sharePermissionPossible}} {{#unless isMailShare}}' +
 								'<li>' +
 									'<span class="shareOption">' +
 										'<input id="canShare-{{cid}}-{{shareWith}}" type="checkbox" name="share" class="permissions checkbox" {{#if hasSharePermission}}checked="checked"{{/if}} data-permissions="{{sharePermission}}" />' +
 										'<label for="canShare-{{cid}}-{{shareWith}}">{{canShareLabel}}</label>' +
 									'</span>' +
 								'</li>' +
-								'{{/if}} {{/if}}' +
+								'{{/unless}} {{/if}} {{/if}}' +
 								'{{#if isFolder}}' +
 									'{{#if createPermissionPossible}}' +
 									'<li>' +
@@ -77,6 +80,7 @@
 								'{{/if}}' +
 							'</ul>' +
 						'</div>' +
+						'{{/unless}}' +
 						'<a href="#" class="unshare"><span class="icon-loading-small hidden"></span><span class="icon icon-delete"></span><span class="hidden-visually">{{unshareLabel}}</span></a>' +
 					'</span>' +
 				'</li>' +
@@ -179,7 +183,9 @@
 				shareType: shareType,
 				shareId: this.model.get('shares')[shareIndex].id,
 				modSeed: shareType !== OC.Share.SHARE_TYPE_USER,
-				isRemoteShare: shareType === OC.Share.SHARE_TYPE_REMOTE
+				isRemoteShare: shareType === OC.Share.SHARE_TYPE_REMOTE,
+				isMailShare: shareType === OC.Share.SHARE_TYPE_EMAIL,
+				isFileSharedByMail: shareType === OC.Share.SHARE_TYPE_EMAIL && !this.model.isFolder()
 			});
 		},
 
